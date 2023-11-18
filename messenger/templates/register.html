@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Messenger - Register</title>
+</head>
+<body>
+<h1>Register</h1>
+{% if error %}
+<p>{{ error }}</p>
+{% endif %}
+<form method="POST">
+    {% csrf_token %}
+    <table>
+        <tr>
+            <td><label for="id_username">Username:</label></td>
+            <td><input type="text" name="username" autofocus required id="id_username"></td>
+        </tr>
+        <tr>
+            <td><label for="id_email">Email:</label></td>
+            <td><input type="text" name="email" required id="id_email"></td>
+        </tr>
+        <tr>
+            <td><label for="id_password">Password:</label></td>
+            <td><input type="password" name="password" required id="id_password"></td>
+        </tr>
+    </table>
+    <input type="submit" value="Register">
+</form>
+</body>
+</html>

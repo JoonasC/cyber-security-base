@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Messenger</title>
+</head>
+<body>
+<h1>Hello {{ request.user.username }}</h1>
+<a href="{% url 'logout' %}">Logout</a>
+{% if error %}
+<p>{{ error }}</p>
+{% endif %}
+<h2>Send a message</h2>
+<form method="POST" action="{% url 'send_message' %}">
+    {% csrf_token %}
+    <table>
+        <tr>
+            <td><label for="id_recipient_username">Recipient username:</label></td>
+            <td><input type="text" name="recipient_username" required id="id_recipient_username"></td>
+        </tr>
+        <tr>
+            <td><label for="id_text">Text:</label></td>
+            <td><textarea name="text" required id="id_text"></textarea></td>
+        </tr>
+    </table>
+    <input type="submit" value="Send">
+</form>
+{% comment %}
+<!-- XSS injection vulnerability in the received messages and sent messages sections. This can be fixed by removing the "|safe" marker -->
+{% endcomment %}
+<h2>Received messages</h2>
+{% for received_message in received_messages %}
+<div style="border-style: ridge; padding-left: 5px; padding-right: 5px">
+    <p>From: {{ received_message.sent_by.username }}</p>
+    <p>{{ received_message.text|safe }}</p>
+</div>
+{% endfor %}
+{% comment %}
+<!--
+The delete link should be replaced with a form that makes a POST request to the delete route (after the issues with the
+delete function have been fixed) in order to fix the broken access control and CSRF security flaws.
+For example:
+<form method="POST" action="{% url 'delete_message' sent_message.id %}">
+{% csrf_token %}
+<input type="submit" value="Delete">
+</form>
+-->
+{% endcomment %}
+<h2>Sent messages</h2>
+{% for sent_message in sent_messages %}
+<div style="border-style: ridge; padding-left: 5px; padding-right: 5px">
+    <p>To: {{ sent_message.sent_to.username }}</p>
+    <p>{{ sent_message.text|safe }}</p>
+    <a href="{% url 'delete_message' sent_message.id %}">Delete</a>
+</div>
+{% endfor %}
+</body>
+</html>
